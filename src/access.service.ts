@@ -128,7 +128,6 @@ export class AccessService {
     if (cannotActivateSomeField) return false;
 
     // and match agains subject instance=
-    relevantRules.forEach(rule => console.log(rule.conditions(subjectInstance)));
     if (useForbiddenError)
       ForbiddenError.from(userAbilities).throwUnlessCan(ability.action, actualSubject);
     return userAbilities.can(ability.action, actualSubject);
