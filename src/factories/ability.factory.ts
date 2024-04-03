@@ -35,9 +35,9 @@ export class AbilityFactory<
     });
 
     // For PureAbility skip conditions check, conditions will be available for filtering through @CaslConditions() param
-    if (abilityClass === PureAbility) {
-      return ability.build({ conditionsMatcher: nullConditionsMatcher });
-    }
+    // if (abilityClass === PureAbility) {
+    //   return ability.build({ conditionsMatcher: nullConditionsMatcher });
+    // }
     return ability.build();
   }
 }
