@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { Ability, AnyAbility, subject } from '@casl/ability';
+import { Ability, AnyAbility, ForbiddenError, subject } from '@casl/ability';
 import { AnyObject, Subject } from '@casl/ability/dist/types/types';
 import { flatten } from 'flat';
 
@@ -14,7 +14,8 @@ import { ConditionsProxy } from './proxies/conditions.proxy';
 
 @Injectable()
 export class AccessService {
-  constructor(private abilityFactory: AbilityFactory) {}
+  constructor(private abilityFactory: AbilityFactory) {
+  }
 
   public getAbility<User extends AuthorizableUser<string, unknown> = AuthorizableUser>(user: User): AnyAbility {
     return this.abilityFactory.createForUser(user);
@@ -66,6 +67,7 @@ export class AccessService {
   public async canActivateAbility<Subject = AnyObject>(
     request: AuthorizableRequest,
     ability?: AbilityMetadata<Subject>,
+    useForbiddenError = true,
   ): Promise<boolean> {
     const { getUserFromRequest, superuserRole } = CaslConfig.getRootOptions();
 
@@ -125,7 +127,10 @@ export class AccessService {
 
     if (cannotActivateSomeField) return false;
 
-    // and match agains subject instance
+    // and match agains subject instance=
+    relevantRules.forEach(rule => console.log(rule.conditions(subjectInstance)));
+    if (useForbiddenError)
+      ForbiddenError.from(userAbilities).throwUnlessCan(ability.action, actualSubject);
     return userAbilities.can(ability.action, actualSubject);
   }
 
