@@ -1,4 +1,4 @@
-import { Ability, AnyAbility, PureAbility, Subject } from '@casl/ability';
+import { Ability, AnyAbility, ExtractSubjectType, MatchConditions, Subject } from '@casl/ability';
 import { Inject, Injectable } from '@nestjs/common';
 import { DefaultActions } from '../actions.enum';
 
@@ -8,6 +8,7 @@ import { UserAbilityBuilder } from '../interfaces/permissions.interface';
 import { CASL_FEATURE_OPTIONS } from '../casl.constants';
 
 export const nullConditionsMatcher = () => (): boolean => true;
+const lambdaMatcher = (matchConditions: MatchConditions) => matchConditions;
 
 @Injectable()
 export class AbilityFactory<
@@ -38,6 +39,9 @@ export class AbilityFactory<
     // if (abilityClass === PureAbility) {
     //   return ability.build({ conditionsMatcher: nullConditionsMatcher });
     // }
-    return ability.build();
+    return ability.build({
+      conditionsMatcher: lambdaMatcher,
+      detectSubjectType: object => object.constructor as ExtractSubjectType<Subjects>,
+    });
   }
 }
