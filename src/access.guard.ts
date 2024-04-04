@@ -27,6 +27,8 @@ export class AccessGuard implements CanActivate {
     req.setUserHook(await userHookFactory(this.moduleRef, getUserHook));
     req.setSubjectHook(await subjectHookFactory(this.moduleRef, ability?.subjectHook));
 
-    return await this.accessService.canActivateAbility(request, ability);
+    const { can } = await this.accessService.canActivateAbility(request, ability);
+
+    return can;
   }
 }
